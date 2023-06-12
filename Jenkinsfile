@@ -7,9 +7,10 @@ pipeline{
     }
 
     stages{
-        whem { expression {param.action == 'create'} }
+        when { expression {param.action == 'create'} }
+        
         stage("Git Chechkout from SCM"){
-        whem { expression {param.action == 'create'} }
+        
             steps{
                 gitCheckout(
                     branch: "main",
@@ -19,7 +20,7 @@ pipeline{
             }
         }
         stage("Unit Test Maven"){
-        whem { expression {param.action == 'create'} }
+        when { expression {param.action == 'create'} }
             steps{
                 script{
                     mvnTest()
@@ -28,7 +29,7 @@ pipeline{
             }
         }
         stage("Maven Integration Testing"){
-         whem { expression {param.action == 'create'} }
+         when { expression {param.action == 'create'} }
             steps{
                 script{
                     mvnInteragrationTest()
