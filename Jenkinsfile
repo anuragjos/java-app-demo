@@ -2,14 +2,17 @@
 pipeline{
     agent any
 
-    // parameters{
-    //     choice (name: 'action',choices: 'create\ndelete', description: 'Choose create/Destroy')
-    // }
+    parameters{
+        choice (name: 'action',choices: 'create\ndelete', description: 'Choose create/Destroy')
+        string (name: 'ImageName', description: "name of the docker build", defaultValue: 'javaapp')
+        string (name: 'ImageTag',  description: "tag of the docker build",  defaultValue: 'v1')
+        string (name: 'Appname',   description: "name of the Application",  defaultValue: 'springboot')
+    }
 
     stages{
         
         stage("Git Chechkout from SCM"){
-            // when { expression {params.action == 'create'} }
+            when { expression {params.action == 'create'} }
         
             steps{
                 gitCheckout(
@@ -20,7 +23,7 @@ pipeline{
             }
         }
         stage("Unit Test Maven"){
-        // when { expression {params.action == 'create'} }
+        when { expression {params.action == 'create'} }
             steps{
                 script{
                     mvnTest()
@@ -29,7 +32,7 @@ pipeline{
             }
         }
         stage("Maven Integration Testing") {
-        //  when { expression {params.action == 'create'} }
+         when { expression {params.action == 'create'} }
             steps{
                 script{
                     mvnInteragrationTest()
@@ -38,7 +41,7 @@ pipeline{
             }
         }
         stage("Static Code Analysis: Sonarqube") {
-        //  when { expression {params.action == 'create'} }
+         when { expression {params.action == 'create'} }
             steps{
                 script{
                     def SonarQubecredentialsId = 'sonar-api'
@@ -47,8 +50,8 @@ pipeline{
                 
             }
         }
-        stage("Quality Gates Status Chechk : Sonarqube:") {
-        //  when { expression {params.action == 'create'} }
+        stage("Quality Gates Status Check : Sonarqube:") {
+         when { expression {params.action == 'create'} }
             steps{
                 script{
                     def SonarQubecredentialsId = 'sonar-api'
@@ -58,10 +61,18 @@ pipeline{
             }
         }
         stage("Maven Build") {
-        //  when { expression {params.action == 'create'} }
+         when { expression {params.action == 'create'} }
             steps{
                 script{
                     mvnBuild()
+                }
+            }
+        }
+        stage("Docker Build") {
+         when { expression {params.action == 'create'} }
+            steps{
+                script{
+                   dockerBuild("${params.ImageName}","${params.ImageTag}","${params.AppName}")
                 }
             }
         }
